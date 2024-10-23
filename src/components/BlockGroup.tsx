@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import styled from "styled-components";
 import Block from "./Block";
-
 const BlocksStyle = styled.div({
   display: "flex",
   flexDirection: "column",

@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { useRef, useEffect, useContext } from "react";
 import { LevelContext } from "../context/LeaverProvider";
+import { difficulty } from "../utils/leveldatas";
 
 type Props = {
   color: string;
@@ -40,7 +41,7 @@ const BlockStyle = styled.button<{ color: string }>(({ color }) => ({
 }));
 
 function Block({ color, onClick, pitch }: Props) {
-  const { level } = useContext(LevelContext);
+  const { level, gameMode, gameDifficulty } = useContext(LevelContext);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const blockRef = useRef<HTMLButtonElement>(null);
@@ -59,25 +60,32 @@ function Block({ color, onClick, pitch }: Props) {
       blockRef.current.style.backgroundColor = getRGBA(color, 1);
       setTimeout(() => {
         blockRef.current!.style.backgroundColor = 'transparent';
-      }, 300);
+      }, 250);
     }
     onClick();
   };
 
   useEffect(() => {
-    if (level.currentPlay === pitch) {
-      playSound();
-      if (blockRef.current) {
-        blockRef.current.style.backgroundColor = getRGBA(color, 1);
-        setTimeout(() => {
-          blockRef.current!.style.backgroundColor = 'transparent';
-        }, 300);
+    if (!gameMode && level.level > 0) {
+      const leveldataPitches = level.leveldata.split("");
+
+      let timer: ReturnType<typeof setTimeout> | undefined;
+
+      leveldataPitches.forEach((leveldataPitche, index) => {
+        timer = setTimeout(() => {
+          if (leveldataPitche === pitch) {
+            handleClick();
+          }
+        }, index * difficulty(gameDifficulty));
+      });
+      return () => {
+        clearTimeout(timer);
       }
     }
-  }, [level, pitch, color]);
+  }, [level, gameMode, pitch]);
 
   return (
-    <BlockStyle ref={blockRef} color={color} onClick={handleClick}>
+    <BlockStyle ref={blockRef} color={color} onClick={handleClick} disabled={!gameMode}>
       <audio ref={audioRef} src={`https://awiclass.monoame.com/pianosound/set/${pitch}.wav`} />
     </BlockStyle>
   );

@@ -2,6 +2,7 @@ import { useContext } from "react";
 import styled from "styled-components";
 import { LevelContext } from "./context/LeaverProvider";
 import BlockGroup from "./components/BlockGroup";
+
 const TitleStyle = styled.div({
   position: "absolute", 
   left: "40px",
@@ -20,19 +21,50 @@ const TitleStyle = styled.div({
   },
 });
 
-function App() {
-  const { level, setLevel } = useContext(LevelContext);
-  const leveldatas = ["12", "12324", "231234", "41233412", "41323134132", "2342341231231423414232"];
+const StyledButton = styled.button`
+  background-color: #FF5353;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
 
-  const playLevel = () => {
-    leveldatas[level.level].split("").forEach((leveldata, index) => {
-      setTimeout(() => {
-        setLevel(prev => ({
-          ...prev,
-          currentPlay: leveldata
-        }));
-      }, index * 1000);
-    });
+  &:hover {
+    background-color: #FF5353;
+  }
+`;
+
+const StyledSelect = styled.select`
+  width: 100px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: #4CAF50;
+  }
+
+  option {
+    padding: 10px;
+  }
+`;
+
+function App() {
+  const { level, gameMode, nextLevel, gameDifficulty, setGameDifficulty } = useContext(LevelContext);
+
+  const handleStartGame = () => {
+    nextLevel();
   }
 
   return (
@@ -42,7 +74,21 @@ function App() {
         <h1>Memory</h1>
         <h1>Blocks</h1>
         <h3 className="status">status - Level {level.level}</h3>
-        <button onClick={() => playLevel()}>play</button>
+        <h2 style={{color: "#FFFFFF"}}>{level.level > 0 ? gameMode ? "輪到你了" : "請仔細聆聽" : ""}</h2>
+        <StyledSelect value={gameDifficulty} onChange={(e) => setGameDifficulty(parseInt(e.target.value))}>
+          <option value={1}>Easy</option>
+          <option value={2}>Normal</option>
+          <option value={3}>Hard</option>
+          <option value={4}>Very Hard</option>
+          <option value={5}>Insane</option>
+        </StyledSelect>
+        <br />
+        <br />
+        <StyledButton onClick={() => handleStartGame()}>Start Game</StyledButton>
+
+        {/* 資料 */}
+        <p>{JSON.stringify(gameMode)}</p>
+        <p>{JSON.stringify(level)}</p>
       </TitleStyle>
       <BlockGroup />
     </>
