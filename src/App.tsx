@@ -81,7 +81,8 @@ function App() {
         <h1>Memory</h1>
         <h1>Blocks</h1>
         <h3 className="status">{levelData.level >= 0 ? `status - Level ${levelData.level + 1}` : "Game ready !"}</h3>
-        <h2 style={{color: "#FFFFFF"}}>{levelData.level >= 0 ? gameMode === "gamePlaying" ? "輪到你了" : "請仔細聆聽" : ""}</h2>
+        <h2 className="status">{levelData.level >= 0 ? (gameMode === "RightAnswer" ? "Correct!" : gameMode === "WrongAnswer" ? "Wrong!" : "") : ""}</h2>
+        <h2 style={{color: "#FFFFFF"}}>{levelData.level >= 0 ? (gameMode === "gamePlaying" ? "輪到你了" : gameMode === "gameListening" ? "請仔細聆聽" : "") : ""}</h2>
         {(gameMode === "gameReady" || gameMode === "gameEnd") && (
           <div>
             <StyledSelect value={gameDifficulty} onChange={(e) => setGameDifficulty(parseInt(e.target.value))}>
