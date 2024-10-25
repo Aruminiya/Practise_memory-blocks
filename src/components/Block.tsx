@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import { useRef, useEffect, useContext, useCallback } from "react";
+import { useRef, useContext, useCallback, forwardRef } from "react";
 import { LevelContext } from "../context/LeaverProvider";
-import { difficulty } from "../utils/leveldatas";
 
 type Props = {
   color: string;
   pitch: string;
+  onClick: () => void;
 }
 
 // 將顏色轉換為 RGB 格式
@@ -39,11 +39,10 @@ const BlockStyle = styled.button<{ color: string }>(({ color }) => ({
   }
 }));
 
-function Block({ color, pitch }: Props) {
-  const { levelData, gameMode, gameDifficulty } = useContext(LevelContext);
+const Block = forwardRef<HTMLButtonElement, Props>(({ color, pitch, onClick }, ref) => {
+  const { gameMode, playerAnswer } = useContext(LevelContext);
 
   const audioRef = useRef<HTMLAudioElement>(null);
-  const blockRef = useRef<HTMLButtonElement>(null);
 
   const playSound = () => {
     const audio = audioRef.current;
@@ -54,39 +53,34 @@ function Block({ color, pitch }: Props) {
   };
 
   const handleClick = useCallback(() => {
+    console.log(gameMode);
     playSound();
-    if (blockRef.current) {
-      blockRef.current.style.backgroundColor = getRGBA(color, 1);
+    if (ref) {
+      ref.current.style.backgroundColor = getRGBA(color, 1);
       setTimeout(() => {
-        blockRef.current!.style.backgroundColor = 'transparent';
+        ref.current!.style.backgroundColor = 'transparent';
       }, 250);
     }
-  }, [color]);
-
-  useEffect(() => {
-    if (gameMode === "gameListening" && levelData.level >= 0) {
-      const leveldataPitches = levelData.data.split("");
-
-      let timer: ReturnType<typeof setTimeout> | undefined;
-
-      leveldataPitches.forEach((leveldataPitche, index) => {
-        timer = setTimeout(() => {
-          if (leveldataPitche === pitch) {
-            handleClick();
-          }
-        }, index * difficulty(gameDifficulty));
-      });
-      return () => {
-        clearTimeout(timer);
-      }
+    if (gameMode === "gamePlaying") {
+      onClick();
     }
-  }, [levelData, gameMode, pitch, gameDifficulty, handleClick]);
+
+  }, [color, gameMode, onClick, ref]);
 
   return (
-    <BlockStyle ref={blockRef} color={color} onClick={handleClick} disabled={!gameMode}>
+    <BlockStyle 
+      ref={ref} 
+      color={color} 
+      style={{
+        pointerEvents: gameMode === "gamePlaying" || gameMode === "gameReady" ? "auto" : "none",
+        opacity: gameMode === "gameListening" ? 0.7 : 1
+      }}
+      onClick={handleClick} 
+      data-pitch={pitch}
+    >
       <audio ref={audioRef} src={`https://awiclass.monoame.com/pianosound/set/${pitch}.wav`} />
     </BlockStyle>
-  );
-}
+  )
+});
 
 export default Block;

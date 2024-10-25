@@ -8,6 +8,8 @@ type LevelData = {
 
 type GameMode = "gameReady" | "gameListening" | "gamePlaying" | "gameEnd" | "RightAnswer" | "WrongAnswer";
 
+let checkLevelDataIndex = -1;
+
 export const LevelContext = createContext<{
   levelData: LevelData;
   gameMode: GameMode;
@@ -15,6 +17,8 @@ export const LevelContext = createContext<{
   nextLevel: () => void;
   gameDifficulty: number;
   setGameDifficulty: (difficulty: number) => void;
+  playerAnswer: (answer: string) => void;
+  initGame: () => void;
 }>({
   levelData: {
     level: 0,
@@ -25,6 +29,8 @@ export const LevelContext = createContext<{
   nextLevel: () => {},
   gameDifficulty: 1,
   setGameDifficulty: () => {},
+  playerAnswer: () => {},
+  initGame: () => {},
 });
 
 export const LevelProvider = ({ children }: { children: React.ReactNode }) => {
@@ -34,8 +40,12 @@ export const LevelProvider = ({ children }: { children: React.ReactNode }) => {
     level: -1,
     data: "",
   });
-
+  
   const nextLevel = () => {
+    if (levelData.level === leveldatas.length - 1) {
+      setGameMode("gameEnd");
+      return;
+    }
     setLevelData(prev => {
       const newLevel = prev.level + 1;
       const newLevelData = leveldatas[newLevel];
@@ -58,6 +68,14 @@ export const LevelProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
+  const initGame = () => {
+    setGameMode("gameReady");
+    setLevelData({
+      level: -1,
+      data: "",
+    });
+  }
+
   const switchGameMode = (gameMode: GameMode) => {
     switch (gameMode) {
       case "gameReady":
@@ -75,8 +93,32 @@ export const LevelProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+
+
+  const playerAnswer = (answer: string) => {
+    const levelDataPitches = levelData.data.split("");
+    console.log(levelDataPitches);
+    checkLevelDataIndex++;
+    console.log(checkLevelDataIndex);
+
+    if (answer === levelDataPitches[checkLevelDataIndex]) {
+      
+      console.log(answer, levelDataPitches[checkLevelDataIndex]);
+      if (checkLevelDataIndex === levelDataPitches.length - 1) {
+        setGameMode("RightAnswer");
+        checkLevelDataIndex = -1;
+      }
+    } else if (answer !== levelDataPitches[checkLevelDataIndex]) {
+      setGameMode("WrongAnswer");
+      checkLevelDataIndex = -1;
+    } else {
+      setGameMode("gameReady");
+      checkLevelDataIndex = -1;
+    }
+  }
+
   return (
-    <LevelContext.Provider value={{ levelData, gameMode, switchGameMode, nextLevel, gameDifficulty, setGameDifficulty }}>
+    <LevelContext.Provider value={{ levelData, gameMode, switchGameMode, nextLevel, gameDifficulty, setGameDifficulty, playerAnswer, initGame }}>
       {children}
     </LevelContext.Provider>
   );
