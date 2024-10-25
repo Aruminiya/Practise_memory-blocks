@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import styled from "styled-components";
 import { LevelContext } from "./context/LeaverProvider";
 import BlockGroup from "./components/BlockGroup";
@@ -61,11 +61,18 @@ const StyledSelect = styled.select`
 `;
 
 function App() {
-  const { level, gameMode, nextLevel, gameDifficulty, setGameDifficulty } = useContext(LevelContext);
+  const { levelData, gameMode, nextLevel, gameDifficulty, setGameDifficulty } = useContext(LevelContext);
 
   const handleStartGame = () => {
     nextLevel();
   }
+
+  useEffect(() => {
+    console.log("準備開始");
+    if (gameMode === "gamePlaying") {
+      console.log("輪到你了");
+    }
+  }, [gameMode]);
 
   return (
     <>
@@ -73,8 +80,8 @@ function App() {
         <h2>記憶方塊</h2>
         <h1>Memory</h1>
         <h1>Blocks</h1>
-        <h3 className="status">status - Level {level.level}</h3>
-        <h2 style={{color: "#FFFFFF"}}>{level.level > 0 ? gameMode ? "輪到你了" : "請仔細聆聽" : ""}</h2>
+        <h3 className="status">{levelData.level >= 0 ? `status - Level ${levelData.level + 1}` : "Game ready !"}</h3>
+        <h2 style={{color: "#FFFFFF"}}>{levelData.level >= 0 ? gameMode === "gamePlaying" ? "輪到你了" : "請仔細聆聽" : ""}</h2>
         <StyledSelect value={gameDifficulty} onChange={(e) => setGameDifficulty(parseInt(e.target.value))}>
           <option value={1}>Easy</option>
           <option value={2}>Normal</option>
@@ -88,7 +95,7 @@ function App() {
 
         {/* 資料 */}
         <p>{JSON.stringify(gameMode)}</p>
-        <p>{JSON.stringify(level)}</p>
+        <p>{JSON.stringify(levelData)}</p>
       </TitleStyle>
       <BlockGroup />
     </>

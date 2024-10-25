@@ -41,7 +41,7 @@ const BlockStyle = styled.button<{ color: string }>(({ color }) => ({
 }));
 
 function Block({ color, onClick, pitch }: Props) {
-  const { level, gameMode, gameDifficulty } = useContext(LevelContext);
+  const { levelData, gameMode, gameDifficulty } = useContext(LevelContext);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const blockRef = useRef<HTMLButtonElement>(null);
@@ -66,8 +66,8 @@ function Block({ color, onClick, pitch }: Props) {
   };
 
   useEffect(() => {
-    if (!gameMode && level.level > 0) {
-      const leveldataPitches = level.leveldata.split("");
+    if (gameMode === "gameListening" && levelData.level >= 0) {
+      const leveldataPitches = levelData.data.split("");
 
       let timer: ReturnType<typeof setTimeout> | undefined;
 
@@ -82,7 +82,7 @@ function Block({ color, onClick, pitch }: Props) {
         clearTimeout(timer);
       }
     }
-  }, [level, gameMode, pitch]);
+  }, [levelData, gameMode, pitch]);
 
   return (
     <BlockStyle ref={blockRef} color={color} onClick={handleClick} disabled={!gameMode}>
