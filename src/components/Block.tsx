@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useRef, useEffect, useContext } from "react";
+import { useRef, useEffect, useContext, useCallback } from "react";
 import { LevelContext } from "../context/LeaverProvider";
 import { difficulty } from "../utils/leveldatas";
 
@@ -53,7 +53,7 @@ function Block({ color, pitch }: Props) {
     }
   };
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     playSound();
     if (blockRef.current) {
       blockRef.current.style.backgroundColor = getRGBA(color, 1);
@@ -61,7 +61,7 @@ function Block({ color, pitch }: Props) {
         blockRef.current!.style.backgroundColor = 'transparent';
       }, 250);
     }
-  };
+  }, [color]);
 
   useEffect(() => {
     if (gameMode === "gameListening" && levelData.level >= 0) {
@@ -80,7 +80,7 @@ function Block({ color, pitch }: Props) {
         clearTimeout(timer);
       }
     }
-  }, [levelData, gameMode, pitch]);
+  }, [levelData, gameMode, pitch, gameDifficulty, handleClick]);
 
   return (
     <BlockStyle ref={blockRef} color={color} onClick={handleClick} disabled={!gameMode}>
