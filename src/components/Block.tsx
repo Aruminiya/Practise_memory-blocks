@@ -5,7 +5,6 @@ import { difficulty } from "../utils/leveldatas";
 
 type Props = {
   color: string;
-  onClick: () => void;
   pitch: string;
 }
 
@@ -40,7 +39,7 @@ const BlockStyle = styled.button<{ color: string }>(({ color }) => ({
   }
 }));
 
-function Block({ color, onClick, pitch }: Props) {
+function Block({ color, pitch }: Props) {
   const { levelData, gameMode, gameDifficulty } = useContext(LevelContext);
 
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -62,7 +61,6 @@ function Block({ color, onClick, pitch }: Props) {
         blockRef.current!.style.backgroundColor = 'transparent';
       }, 250);
     }
-    onClick();
   };
 
   useEffect(() => {
