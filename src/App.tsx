@@ -82,25 +82,25 @@ function App() {
         <h1>Blocks</h1>
         <h3 className="status">{levelData.level >= 0 ? `status - Level ${levelData.level + 1}` : "Game ready !"}</h3>
         <h2 className="status">{levelData.level >= 0 ? (gameMode === "RightAnswer" ? "Correct!" : gameMode === "WrongAnswer" ? "Wrong!" : "") : ""}</h2>
-        <h2 style={{color: "#FFFFFF"}}>{levelData.level >= 0 ? (gameMode === "gamePlaying" ? "輪到你了" : gameMode === "gameListening" ? "請仔細聆聽" : "") : ""}</h2>
-        {(gameMode === "gameReady" || gameMode === "gameEnd") && (
+        <h2 style={{color: "#FFFFFF"}}>{levelData.level >= 0 ? (gameMode === "gamePlaying" ? "輪到你了" : gameMode === "gameListening" ? "請仔細聆聽" : gameMode === "gameEnd" ? "恭喜通關！" : "") : ""}</h2>
+        {(gameMode === "gameReady") && (
           <div>
             <StyledSelect value={gameDifficulty} onChange={(e) => setGameDifficulty(parseInt(e.target.value))}>
               <option value={1}>Easy</option>
-            <option value={2}>Normal</option>
-            <option value={3}>Hard</option>
-            <option value={4}>Very Hard</option>
-            <option value={5}>Insane</option>
-          </StyledSelect>
-          <br />
+              <option value={2}>Normal</option>
+              <option value={3}>Hard</option>
+              <option value={4}>Very Hard</option>
+              <option value={5}>Insane</option>
+            </StyledSelect>
             <br />
-            <StyledButton onClick={() => handleStartGame()}>{gameMode === "gameReady" ? "Start Game" : "Restart Game"}</StyledButton>
+            <br />
+            <StyledButton onClick={() => handleStartGame()}>Start Game</StyledButton> 
           </div>
         )}
 
         {/* 資料 */}
-        <p>{JSON.stringify(gameMode)}</p>
-        <p>{JSON.stringify(levelData)}</p>
+        {/* <p>{JSON.stringify(gameMode)}</p>
+        <p>{JSON.stringify(levelData)}</p> */}
       </TitleStyle>
       <BlockGroup />
     </>

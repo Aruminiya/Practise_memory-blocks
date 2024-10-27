@@ -5,6 +5,7 @@ import { LevelContext } from "../context/LeaverProvider";
 import { difficulty } from "../utils/leveldatas";
 import success from "../assets/success.mp3";
 import wrong from "../assets/fail.mp3";
+import bonusWin from "../assets/bonusWin.mp3";
 
 const BlocksStyle = styled.div({
   display: "flex",
@@ -69,7 +70,7 @@ function BlockGroup() {
       }
     }
 
-    if (gameMode === "WrongAnswer") {
+    if (gameMode === "WrongAnswer" || gameMode === "gameEnd") {
       audioRef.current?.play();
       const leavalTimer = setTimeout(() => {
         initGame();
@@ -92,7 +93,7 @@ function BlockGroup() {
           <Block ref={blockPitch4Ref} color="#FBE9B7" pitch="4" onClick={() => handleClick("4")} />
         </div>  
       </BlocksStyle>
-      <audio ref={audioRef} src={gameMode === "RightAnswer" ? success : wrong} />
+      <audio ref={audioRef} src={gameMode === "RightAnswer" ? success : gameMode === "WrongAnswer" ? wrong : bonusWin} />
     </>
   )
 }

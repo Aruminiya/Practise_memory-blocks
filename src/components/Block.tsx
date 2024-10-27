@@ -104,6 +104,32 @@ const Block = forwardRef<HTMLButtonElement, Props>(({ color, pitch, onClick }, r
       };
     }
 
+    /*
+    在 React 的 `useEffect` 中使用 `for` 迴圈是可以的，但需要注意閉包問題。當你在迴圈中使用 `setTimeout` 時，
+    通常會遇到閉包問題，這可能會導致所有的計時器都使用最後一個迴圈變數的值。為了解決這個問題，你可以使用立即執行函數（IIFE）來創建一個新的作用域。
+    */
+
+    if (gameMode === "gameEnd" && ref && 'current' in ref && ref.current) {
+      // 設置一個初始的計時器，延遲 50 毫秒後開始閃爍效果
+      const timer = setTimeout(() => {
+        // 使用 for 迴圈來設置多個計時器，控制背景顏色的閃爍
+        for (let i = 0; i < 8; i++) {
+          // 使用立即執行函數 (IIFE) 來創建一個新的作用域，確保每個計時器捕獲正確的迴圈變數 i
+          ((index) => {
+            setTimeout(() => {
+              // 根據 index 的奇偶性來切換背景顏色
+              ref.current!.style.backgroundColor = index % 2 === 0 ? getRGBA(color, 1) : "transparent";
+            }, 200 * index); // 每次閃爍的間隔時間為 200 毫秒
+          })(i);
+        }
+      }, 50); // 初始延遲 50 毫秒
+
+      // 清除計時器以避免內存洩漏
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+
   }, [color, gameMode, ref]);
 
   return (
