@@ -1,11 +1,10 @@
 import styled from "styled-components";
-import { useRef, useContext, useCallback, forwardRef } from "react";
+import { useRef, useContext, useCallback, forwardRef, useEffect } from "react";
 import { LevelContext } from "../context/LeaverProvider";
 
 type Props = {
   color: string;
   pitch: string;
-  alertLight: boolean;
   onClick: () => void;
 }
 
@@ -20,26 +19,27 @@ const getRGBA = (color: string, alpha: number) => {
   return `rgba(${rgbValues![0]}, ${rgbValues![1]}, ${rgbValues![2]}, ${alpha})`;
 };
 
-const BlockStyle = styled.button<{ color: string, alertLight: boolean }>(({ color }) => ({
+const BlockStyle = styled.button<{ color: string, gameMode: string }>(({ color, gameMode }) => ({
   border: `1px solid ${color}`,
   width: "120px",
   height: "120px",
   cursor: "pointer",
-  boxShadow: `0px 0px 15px ${color}`,
+  transition: "box-shadow 0.2s, background-color 0.2s",
   backgroundColor: "transparent",
+  pointerEvents: gameMode === "gamePlaying" || gameMode === "gameReady" ? "auto" : "none",
+  boxShadow: gameMode === "gameListening" ? "none" : `0px 0px 15px ${color}`,
 
   '&:hover': {
-    transition: "0.2s",
-    backgroundColor: getRGBA(color, 0.3)
+    backgroundColor: getRGBA(color, 0.3),
+    boxShadow: `0px 0px 35px ${color}`
   },
 
   '&:active': {
     backgroundColor: getRGBA(color, 1),
-    boxShadow: `0px 0px 35px ${color}`
   }
 }));
 
-const Block = forwardRef<HTMLButtonElement, Props>(({ color, pitch, alertLight, onClick }, ref) => {
+const Block = forwardRef<HTMLButtonElement, Props>(({ color, pitch, onClick }, ref) => {
   const { gameMode } = useContext(LevelContext);
 
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -67,16 +67,45 @@ const Block = forwardRef<HTMLButtonElement, Props>(({ color, pitch, alertLight, 
 
   }, [color, gameMode, onClick, ref]);
 
+  useEffect(() => {
+    if (gameMode === "RightAnswer" && ref && 'current' in ref && ref.current) {
+      const timer = setTimeout(() => {
+        ref.current!.style.backgroundColor = getRGBA(color, 1);
+        setTimeout(() => {
+          ref.current!.style.backgroundColor = "transparent";
+          setTimeout(() => {
+            ref.current!.style.backgroundColor = getRGBA(color, 1);
+            setTimeout(() => {
+              ref.current!.style.backgroundColor = "transparent";
+            }, 150);
+          }, 150);
+        }, 150);
+      }, 250);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+
+    if (gameMode === "WrongAnswer" && ref && 'current' in ref && ref.current) {
+      const timer = setTimeout(() => {
+        ref.current!.style.backgroundColor = getRGBA(color, 1);
+        setTimeout(() => {
+          ref.current!.style.backgroundColor = "transparent";
+        }, 1000);
+      }, 250);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [color, gameMode, ref]);
+
   return (
     <BlockStyle 
       ref={ref} 
       color={color} 
-      alertLight={alertLight}
-      style={{
-        pointerEvents: gameMode === "gamePlaying" || gameMode === "gameReady" ? "auto" : "none",
-        opacity: gameMode === "gameListening" ? 0.7 : 1,
-        backgroundColor: alertLight ? getRGBA(color, 1) : "transparent"
-      }}
+      gameMode={gameMode}
       onClick={handleClick} 
       data-pitch={pitch}
     >

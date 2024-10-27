@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Block from "./Block";
 import { LevelContext } from "../context/LeaverProvider";
@@ -15,8 +15,6 @@ const BlocksStyle = styled.div({
 });
 
 function BlockGroup() {
-  const [alertLight, setAlertLight] = useState(false);
-
   const blockPitch1Ref = useRef<HTMLButtonElement>(null);
   const blockPitch2Ref = useRef<HTMLButtonElement>(null);
   const blockPitch3Ref = useRef<HTMLButtonElement>(null);
@@ -58,29 +56,19 @@ function BlockGroup() {
     }
 
     if (gameMode === "RightAnswer") {
-      const alertLightTimer = setTimeout(() => {
-        setAlertLight(true);
-      }, 500);
       const leavalTimer = setTimeout(() => {
-        setAlertLight(false);
         nextLevel();
       }, 1500);
       return () => {
-        clearTimeout(alertLightTimer);
         clearTimeout(leavalTimer);
       }
     }
 
     if (gameMode === "WrongAnswer") {
-      const alertLightTimer = setTimeout(() => {
-        setAlertLight(true);
-      }, 500);
       const leavalTimer = setTimeout(() => {
-        setAlertLight(false);
         initGame();
       }, 1500);
       return () => {
-        clearTimeout(alertLightTimer);
         clearTimeout(leavalTimer);
       }
     }
@@ -89,12 +77,12 @@ function BlockGroup() {
   return (
     <BlocksStyle>
       <div className="row">
-        <Block ref={blockPitch1Ref} color="#FF5353" pitch="1" alertLight={alertLight} onClick={() => handleClick("1")} />
-        <Block ref={blockPitch2Ref} color="#FFC429" pitch="2" alertLight={alertLight} onClick={() => handleClick("2")} />
+        <Block ref={blockPitch1Ref} color="#FF5353" pitch="1" onClick={() => handleClick("1")} />
+        <Block ref={blockPitch2Ref} color="#FFC429" pitch="2" onClick={() => handleClick("2")} />
       </div>
       <div className="row">
-        <Block ref={blockPitch3Ref} color="#5980C1" pitch="3" alertLight={alertLight} onClick={() => handleClick("3")} />
-        <Block ref={blockPitch4Ref} color="#FBE9B7" pitch="4" alertLight={alertLight} onClick={() => handleClick("4")} />
+        <Block ref={blockPitch3Ref} color="#5980C1" pitch="3" onClick={() => handleClick("3")} />
+        <Block ref={blockPitch4Ref} color="#FBE9B7" pitch="4" onClick={() => handleClick("4")} />
       </div>  
     </BlocksStyle>
   )
