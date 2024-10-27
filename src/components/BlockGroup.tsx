@@ -3,6 +3,8 @@ import styled from "styled-components";
 import Block from "./Block";
 import { LevelContext } from "../context/LeaverProvider";
 import { difficulty } from "../utils/leveldatas";
+import success from "../assets/success.mp3";
+import wrong from "../assets/fail.mp3";
 
 const BlocksStyle = styled.div({
   display: "flex",
@@ -19,6 +21,8 @@ function BlockGroup() {
   const blockPitch2Ref = useRef<HTMLButtonElement>(null);
   const blockPitch3Ref = useRef<HTMLButtonElement>(null);
   const blockPitch4Ref = useRef<HTMLButtonElement>(null);
+
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const {
     gameMode,
@@ -56,6 +60,7 @@ function BlockGroup() {
     }
 
     if (gameMode === "RightAnswer") {
+      audioRef.current?.play();
       const leavalTimer = setTimeout(() => {
         nextLevel();
       }, 1500);
@@ -65,6 +70,7 @@ function BlockGroup() {
     }
 
     if (gameMode === "WrongAnswer") {
+      audioRef.current?.play();
       const leavalTimer = setTimeout(() => {
         initGame();
       }, 1500);
@@ -75,16 +81,19 @@ function BlockGroup() {
   }, [gameMode, initGame, nextLevel, levelData, gameDifficulty]);
 
   return (
-    <BlocksStyle>
-      <div className="row">
-        <Block ref={blockPitch1Ref} color="#FF5353" pitch="1" onClick={() => handleClick("1")} />
-        <Block ref={blockPitch2Ref} color="#FFC429" pitch="2" onClick={() => handleClick("2")} />
-      </div>
-      <div className="row">
-        <Block ref={blockPitch3Ref} color="#5980C1" pitch="3" onClick={() => handleClick("3")} />
-        <Block ref={blockPitch4Ref} color="#FBE9B7" pitch="4" onClick={() => handleClick("4")} />
-      </div>  
-    </BlocksStyle>
+    <>
+      <BlocksStyle>
+        <div className="row">
+          <Block ref={blockPitch1Ref} color="#FF5353" pitch="1" onClick={() => handleClick("1")} />
+          <Block ref={blockPitch2Ref} color="#FFC429" pitch="2" onClick={() => handleClick("2")} />
+        </div>
+        <div className="row">
+          <Block ref={blockPitch3Ref} color="#5980C1" pitch="3" onClick={() => handleClick("3")} />
+          <Block ref={blockPitch4Ref} color="#FBE9B7" pitch="4" onClick={() => handleClick("4")} />
+        </div>  
+      </BlocksStyle>
+      <audio ref={audioRef} src={gameMode === "RightAnswer" ? success : wrong} />
+    </>
   )
 }
 

@@ -1,6 +1,10 @@
 import styled from "styled-components";
 import { useRef, useContext, useCallback, forwardRef, useEffect } from "react";
 import { LevelContext } from "../context/LeaverProvider";
+import pitch1 from "../assets/pitch/1.wav";
+import pitch2 from "../assets/pitch/2.wav";
+import pitch3 from "../assets/pitch/3.wav";
+import pitch4 from "../assets/pitch/4.wav";
 
 type Props = {
   color: string;
@@ -68,7 +72,7 @@ const Block = forwardRef<HTMLButtonElement, Props>(({ color, pitch, onClick }, r
   }, [color, gameMode, onClick, ref]);
 
   useEffect(() => {
-    if (gameMode === "RightAnswer" && ref && 'current' in ref && ref.current) {
+    if (gameMode === "WrongAnswer" && ref && 'current' in ref && ref.current) {
       const timer = setTimeout(() => {
         ref.current!.style.backgroundColor = getRGBA(color, 1);
         setTimeout(() => {
@@ -80,25 +84,26 @@ const Block = forwardRef<HTMLButtonElement, Props>(({ color, pitch, onClick }, r
             }, 150);
           }, 150);
         }, 150);
-      }, 250);
+      }, 350);
 
       return () => {
         clearTimeout(timer);
       };
     }
 
-    if (gameMode === "WrongAnswer" && ref && 'current' in ref && ref.current) {
+    if (gameMode === "RightAnswer" && ref && 'current' in ref && ref.current) {
       const timer = setTimeout(() => {
         ref.current!.style.backgroundColor = getRGBA(color, 1);
         setTimeout(() => {
           ref.current!.style.backgroundColor = "transparent";
         }, 1000);
-      }, 250);
+      }, 350);
 
       return () => {
         clearTimeout(timer);
       };
     }
+
   }, [color, gameMode, ref]);
 
   return (
@@ -109,7 +114,7 @@ const Block = forwardRef<HTMLButtonElement, Props>(({ color, pitch, onClick }, r
       onClick={handleClick} 
       data-pitch={pitch}
     >
-      <audio ref={audioRef} src={`https://awiclass.monoame.com/pianosound/set/${pitch}.wav`} />
+      <audio ref={audioRef} src={pitch === "1" ? pitch1 : pitch === "2" ? pitch2 : pitch === "3" ? pitch3 : pitch4} />
     </BlockStyle>
   )
 });
