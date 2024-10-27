@@ -1,5 +1,4 @@
-// export const leveldatas = ["12", "12324", "231234", "41233412", "41323134132", "234234123123142"];
-export const leveldatas = ["12", "1234", "12324"];
+export const leveldatas = ["12", "12324", "231234", "41233412", "41323134132", "234234123123142"];
 export const difficulty = (level: number) => {
   switch (level) {
     case 1: return 1500;
