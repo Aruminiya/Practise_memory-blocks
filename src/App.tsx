@@ -8,6 +8,7 @@ const TitleStyle = styled.div({
   left: "40px",
   top: "40px",
   color: "#fff",
+  zIndex: 100,
   h1: {
     fontSize: "40px",
     marginTop: 0,
@@ -19,29 +20,59 @@ const TitleStyle = styled.div({
     fontWeight: 500,
     color: "#FF5353",
   },
+
+  '@media (max-width: 768px)': {
+    top: "30px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "20px",
+    h1: {
+      fontSize: "36px",
+      marginTop: 0,
+      marginBottom: 0,
+      letterSpacing: "1px",
+    },
+    "h2, h3": {
+      lineHeight: "0",
+    },
+  }
+});
+
+const StatusTextStyle = styled.div({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "10px",
+  color: "#fff",
+  zIndex: 100,
+  "h4": {
+    color: "#FF5353",
+  }
 });
 
 const StyledButton = styled.button`
-  background-color: #FF5353;
-  border: none;
-  color: white;
-  padding: 15px 32px;
+  background-color: transparent;
+  border: solid 1px #FF5353;
+  color: #FF5353;
+  padding: 10px 16px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
-  margin: 4px 2px;
+  margin: 10px 0px;
   cursor: pointer;
   border-radius: 4px;
   transition: background-color 0.3s;
 
   &:hover {
     background-color: #FF5353;
+    color: #fff;
   }
 `;
 
 const StyledSelect = styled.select`
-  width: 100px;
+  width: auto;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ddd;
@@ -60,6 +91,14 @@ const StyledSelect = styled.select`
   }
 `;
 
+const statusMessages = {
+  RightAnswer: "正確!",
+  WrongAnswer: "錯誤!",
+  gamePlaying: "輪到你了",
+  gameListening: "請仔細聆聽",
+  gameEnd: "恭喜通關！"
+};
+
 function App() {
   const { levelData, gameMode, nextLevel, gameDifficulty, setGameDifficulty } = useContext(LevelContext);
 
@@ -77,22 +116,21 @@ function App() {
   return (
     <>
       <TitleStyle>
-        <h2>記憶方塊</h2>
-        <h1>Memory</h1>
-        <h1>Blocks</h1>
-        <h3 className="status">{levelData.level >= 0 ? `status - Level ${levelData.level + 1}` : "Game ready !"}</h3>
-        <h2 className="status">{levelData.level >= 0 ? (gameMode === "RightAnswer" ? "Correct!" : gameMode === "WrongAnswer" ? "Wrong!" : "") : ""}</h2>
-        <h2 style={{color: "#FFFFFF"}}>{levelData.level >= 0 ? (gameMode === "gamePlaying" ? "輪到你了" : gameMode === "gameListening" ? "請仔細聆聽" : gameMode === "gameEnd" ? "恭喜通關！" : "") : ""}</h2>
+        <div className="title">
+          <h2>記憶方塊</h2>
+          <h1>Memory</h1>
+          <h1>Blocks</h1>
+        </div>
+        <br />
         {(gameMode === "gameReady") && (
-          <div>
+          <div className="gameOption">
             <StyledSelect value={gameDifficulty} onChange={(e) => setGameDifficulty(parseInt(e.target.value))}>
-              <option value={1}>Easy</option>
-              <option value={2}>Normal</option>
-              <option value={3}>Hard</option>
-              <option value={4}>Very Hard</option>
-              <option value={5}>Insane</option>
+              <option value={1}>簡單</option>
+              <option value={2}>普通</option>
+              <option value={3}>困難</option>
+              <option value={4}>極難</option>
+              <option value={5}>瘋狂</option>
             </StyledSelect>
-            <br />
             <br />
             <StyledButton onClick={() => handleStartGame()}>Start Game</StyledButton> 
           </div>
@@ -102,7 +140,14 @@ function App() {
         {/* <p>{JSON.stringify(gameMode)}</p>
         <p>{JSON.stringify(levelData)}</p> */}
       </TitleStyle>
+
       <BlockGroup />
+        <StatusTextStyle>
+          <h4>{levelData.level >= 0 ? `status - Level ${levelData.level + 1}` : "Game ready !"}</h4>
+          <h4>
+            {statusMessages[gameMode as keyof typeof statusMessages] || ""}
+          </h4>
+        </StatusTextStyle>
     </>
   )
 }

@@ -57,8 +57,9 @@ const Block = forwardRef<HTMLButtonElement, Props>(({ color, pitch, onClick }, r
   };
 
   const handleClick = useCallback(() => {
-    console.log(gameMode);
-    playSound();
+    if (gameMode !== "gameReady") {
+      playSound();
+    };
     if (ref && 'current' in ref && ref.current) {
       ref.current.style.backgroundColor = getRGBA(color, 1);
       setTimeout(() => {
