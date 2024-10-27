@@ -71,6 +71,7 @@ const Block = forwardRef<HTMLButtonElement, Props>(({ color, pitch, alertLight, 
     <BlockStyle 
       ref={ref} 
       color={color} 
+      alertLight={alertLight}
       style={{
         pointerEvents: gameMode === "gamePlaying" || gameMode === "gameReady" ? "auto" : "none",
         opacity: gameMode === "gameListening" ? 0.7 : 1,

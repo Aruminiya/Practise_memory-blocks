@@ -60,7 +60,7 @@ function BlockGroup() {
     if (gameMode === "RightAnswer") {
       const alertLightTimer = setTimeout(() => {
         setAlertLight(true);
-      }, 10);
+      }, 500);
       const leavalTimer = setTimeout(() => {
         setAlertLight(false);
         nextLevel();
@@ -74,7 +74,7 @@ function BlockGroup() {
     if (gameMode === "WrongAnswer") {
       const alertLightTimer = setTimeout(() => {
         setAlertLight(true);
-      }, 10);
+      }, 500);
       const leavalTimer = setTimeout(() => {
         setAlertLight(false);
         initGame();
