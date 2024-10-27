@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Block from "./Block";
 import { LevelContext } from "../context/LeaverProvider";
@@ -15,6 +15,8 @@ const BlocksStyle = styled.div({
 });
 
 function BlockGroup() {
+  const [alertLight, setAlertLight] = useState(false);
+
   const blockPitch1Ref = useRef<HTMLButtonElement>(null);
   const blockPitch2Ref = useRef<HTMLButtonElement>(null);
   const blockPitch3Ref = useRef<HTMLButtonElement>(null);
@@ -37,7 +39,7 @@ function BlockGroup() {
 
   useEffect(() => {
     if (gameMode === "gameListening" && levelData && levelData.level >= 0) {
-      let timer: ReturnType<typeof setTimeout> | null = null;
+      let timer: ReturnType<typeof setTimeout> | undefined = undefined;
       console.log(blockPitch1Ref);
       const leveldataPitches = levelData.data.split("");
       leveldataPitches.forEach((pitch, index) => {
@@ -56,26 +58,44 @@ function BlockGroup() {
     }
 
     if (gameMode === "RightAnswer") {
-      const timer = setTimeout(nextLevel, 1500);
-      return () => clearTimeout(timer);
+      const alertLightTimer = setTimeout(() => {
+        setAlertLight(true);
+      }, 10);
+      const leavalTimer = setTimeout(() => {
+        setAlertLight(false);
+        nextLevel();
+      }, 1500);
+      return () => {
+        clearTimeout(alertLightTimer);
+        clearTimeout(leavalTimer);
+      }
     }
 
     if (gameMode === "WrongAnswer") {
-      const timer = setTimeout(initGame, 1500);
-      return () => clearTimeout(timer);
+      const alertLightTimer = setTimeout(() => {
+        setAlertLight(true);
+      }, 10);
+      const leavalTimer = setTimeout(() => {
+        setAlertLight(false);
+        initGame();
+      }, 1500);
+      return () => {
+        clearTimeout(alertLightTimer);
+        clearTimeout(leavalTimer);
+      }
     }
   }, [gameMode, initGame, nextLevel, levelData, gameDifficulty]);
 
   return (
     <BlocksStyle>
       <div className="row">
-        <Block ref={blockPitch1Ref} color="#FF5353" pitch="1" onClick={() => handleClick("1")} />
-        <Block ref={blockPitch2Ref} color="#FFC429" pitch="2" onClick={() => handleClick("2")} />
+        <Block ref={blockPitch1Ref} color="#FF5353" pitch="1" alertLight={alertLight} onClick={() => handleClick("1")} />
+        <Block ref={blockPitch2Ref} color="#FFC429" pitch="2" alertLight={alertLight} onClick={() => handleClick("2")} />
       </div>
       <div className="row">
-        <Block ref={blockPitch3Ref} color="#5980C1" pitch="3" onClick={() => handleClick("3")} />
-        <Block ref={blockPitch4Ref} color="#FBE9B7" pitch="4" onClick={() => handleClick("4")} />
-      </div>
+        <Block ref={blockPitch3Ref} color="#5980C1" pitch="3" alertLight={alertLight} onClick={() => handleClick("3")} />
+        <Block ref={blockPitch4Ref} color="#FBE9B7" pitch="4" alertLight={alertLight} onClick={() => handleClick("4")} />
+      </div>  
     </BlocksStyle>
   )
 }

@@ -5,6 +5,7 @@ import { LevelContext } from "../context/LeaverProvider";
 type Props = {
   color: string;
   pitch: string;
+  alertLight: boolean;
   onClick: () => void;
 }
 
@@ -19,17 +20,16 @@ const getRGBA = (color: string, alpha: number) => {
   return `rgba(${rgbValues![0]}, ${rgbValues![1]}, ${rgbValues![2]}, ${alpha})`;
 };
 
-const BlockStyle = styled.button<{ color: string }>(({ color }) => ({
+const BlockStyle = styled.button<{ color: string, alertLight: boolean }>(({ color }) => ({
   border: `1px solid ${color}`,
   width: "120px",
   height: "120px",
   cursor: "pointer",
   boxShadow: `0px 0px 15px ${color}`,
   backgroundColor: "transparent",
-  transition: "0.3s",
 
   '&:hover': {
-    transition: "0.3s",
+    transition: "0.2s",
     backgroundColor: getRGBA(color, 0.3)
   },
 
@@ -39,8 +39,8 @@ const BlockStyle = styled.button<{ color: string }>(({ color }) => ({
   }
 }));
 
-const Block = forwardRef<HTMLButtonElement, Props>(({ color, pitch, onClick }, ref) => {
-  const { gameMode, playerAnswer } = useContext(LevelContext);
+const Block = forwardRef<HTMLButtonElement, Props>(({ color, pitch, alertLight, onClick }, ref) => {
+  const { gameMode } = useContext(LevelContext);
 
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -55,7 +55,7 @@ const Block = forwardRef<HTMLButtonElement, Props>(({ color, pitch, onClick }, r
   const handleClick = useCallback(() => {
     console.log(gameMode);
     playSound();
-    if (ref) {
+    if (ref && 'current' in ref && ref.current) {
       ref.current.style.backgroundColor = getRGBA(color, 1);
       setTimeout(() => {
         ref.current!.style.backgroundColor = 'transparent';
@@ -73,7 +73,8 @@ const Block = forwardRef<HTMLButtonElement, Props>(({ color, pitch, onClick }, r
       color={color} 
       style={{
         pointerEvents: gameMode === "gamePlaying" || gameMode === "gameReady" ? "auto" : "none",
-        opacity: gameMode === "gameListening" ? 0.7 : 1
+        opacity: gameMode === "gameListening" ? 0.7 : 1,
+        backgroundColor: alertLight ? getRGBA(color, 1) : "transparent"
       }}
       onClick={handleClick} 
       data-pitch={pitch}
